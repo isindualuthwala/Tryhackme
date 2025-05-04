@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Reflected XSS Challenge</title>
+  <style>
+    body { font-family: sans-serif; margin: 2rem; background-color: #f4f4f4; }
+    .box { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); max-width: 700px; margin: auto; }
+    input[type="text"] { width: 300px; padding: 10px; }
+    button { padding: 10px 20px; margin-left: 10px; }
+    .results { margin-top: 20px; padding: 10px; border: 1px solid #ccc; background: #fefefe; }
+    code { background: #eee; padding: 2px 6px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+
+  <div class="box">
+    <h1>🛡️ Reflected XSS Mini Challenge</h1>
+
+    <p>Welcome! This is a simulation of a real-world vulnerability where user input is improperly reflected into the page. Your goal is to trigger a success alert if your script runs.</p>
+
+    <h3>🎯 Instructions:</h3>
+    <ul>
+      <li>Enter a payload using the <code>q</code> parameter.</li>
+      <li>If your payload executes JavaScript, you’ll automatically see a success popup.</li>
+    </ul>
+
+    <form method="GET">
+      <input type="text" name="q" placeholder="Search..." />
+      <button type="submit">Search</button>
+    </form>
+
+    <div class="results">
+      <p>Showing results for: <strong id="query-result"></strong></p>
+    </div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const query = params.get('q');
+    const resultBox = document.getElementById('query-result');
+
+    if (query) {
+      // Render the user input (vulnerable)
+      resultBox.innerHTML = query;
+
+      // 🧠 Auto-detect script or tag execution using MutationObserver
+      const observer = new MutationObserver((mutations) => {
+        alert("✅ Exploit Successful!");
+      });
+
+      observer.observe(resultBox, {
+        childList: true,
+        subtree: true
+      });
+    }
+  </script>
+
+</body>
+</html>
